@@ -62,15 +62,14 @@ class ResPartner(models.Model):
             request_result = requests.get(url, params=pay_load, headers=headers)
             try:
                 request_result.raise_for_status()
-            except Exception as e:
-                _logger.exception('Geocoding error')
-                raise exceptions.Warning(_('Geocoding error. \n %s') % e.message)
-            vals = request_result.json()
-            vals = vals and vals[0] or {}
-            partner.write({
-                'partner_latitude': vals.get('lat'),
-                'partner_longitude': vals.get('lon'),
-                'date_localization': fields.Date.today()})
+                vals = request_result.json()
+                vals = vals and vals[0] or {}
+                partner.write({
+                    'partner_latitude': vals.get('lat'),
+                    'partner_longitude': vals.get('lon'),
+                    'date_localization': fields.Date.today()})
+            except:
+                _logger.error('Geocoding error', exc_info=True)
 
     @api.multi
     def geo_localize(self):
